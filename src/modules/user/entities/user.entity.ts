@@ -39,10 +39,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Ticket, (ticket) => ticket.user)
   tickets: Ticket[];
 
-  //A user can have many activities
-  @OneToMany(() => Activity, (activity) => activity.user)
-  activities: Activity[];
-
   //A user can follow many users
   @OneToMany(() => GuardianShip, (guardianship) => guardianship.parent)
   children: GuardianShip[];

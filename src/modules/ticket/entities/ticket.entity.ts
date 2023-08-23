@@ -1,7 +1,7 @@
-import { EncryptionService } from '../../../common/services/encryption.service';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from 'src/modules/user/entities/user.entity';
+import { Activity } from './activity.entity';
 
 @Entity()
 export class Ticket extends BaseEntity {
@@ -31,4 +31,8 @@ export class Ticket extends BaseEntity {
     onDelete: 'CASCADE'
   })
   user: User;
+
+  //A user can have many activities
+  @OneToMany(() => Activity, (activity) => activity.ticket)
+  activities: Activity[];
 }

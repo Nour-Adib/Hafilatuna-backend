@@ -79,4 +79,8 @@ export class UserService {
 
     return children;
   }
+
+  async getProfile(user: User): Promise<User> {
+    return this.usersRepository.findOne({ where: { id: user.id } });
+  }
 }

@@ -39,4 +39,18 @@ export class UserController {
         return res.status(err.status).json({ message: err.message });
       });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req, @Res() res: Response) {
+    this.userService
+      .getProfile(req.user)
+      .then((user) => {
+        return res.status(HttpStatus.OK).json(user);
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(err.status).json({ message: err.message });
+      });
+  }
 }
