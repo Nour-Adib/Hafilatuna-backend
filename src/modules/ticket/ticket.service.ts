@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Ticket } from './entities/ticket.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { User } from '../user/entities/user.entity';
 import { schoolClusters } from './school-data';
+import { UserService } from '../user/user.service';
+import { CreateChildTicketDto } from './dto/create-child-ticket.dto';
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectRepository(Ticket)
-    private ticketRepository: Repository<Ticket>
+    private ticketRepository: Repository<Ticket>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>
   ) {}
 
   createTicket(user: User, createTicketDto: CreateTicketDto): Promise<Ticket> {
@@ -25,6 +29,41 @@ export class TicketService {
     newTicket.busCode = this.getBusNumber(createTicketDto.dropOffAddress);
     newTicket.clusterNumber = this.getCluster(createTicketDto.dropOffAddress);
     newTicket.user = user;
+
+    return this.ticketRepository.save(newTicket);
+  }
+
+  async createTicketForChild(
+    user: User,
+    createChildTicketDto: CreateChildTicketDto
+  ): Promise<Ticket> {
+    const expirationDate = new Date();
+    expirationDate.setMonth(expirationDate.getMonth() + 3);
+
+    const child = await this.userRepository.findOne({
+      where: { id: createChildTicketDto.childId },
+      relations: ['parents.parent']
+    });
+
+    if (!child) {
+      throw new BadRequestException('Child not found');
+    }
+
+    console.log(child.parents);
+    
+
+    if (!child.parents.some((guardianship) => guardianship.parent.id === user.id)) {
+      throw new BadRequestException('You are not the guardian of this child');
+    }
+
+    const newTicket = new Ticket();
+    newTicket.activationDate = new Date();
+    newTicket.expirationDate = expirationDate;
+    newTicket.expired = false;
+    newTicket.seatNumber = this.getSeatNumber();
+    newTicket.busCode = this.getBusNumber(createChildTicketDto.dropOffAddress);
+    newTicket.clusterNumber = this.getCluster(createChildTicketDto.dropOffAddress);
+    newTicket.user = child;
 
     return this.ticketRepository.save(newTicket);
   }

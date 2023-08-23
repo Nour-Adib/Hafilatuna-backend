@@ -3,6 +3,8 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany } from 'typeorm';
 import { Ticket } from 'src/modules/ticket/entities/ticket.entity';
 import { Activity } from 'src/modules/ticket/entities/activity.entity';
+import { AccountType } from 'src/common/enum/account-type.enum';
+import { GuardianShip } from './guardianship.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -30,13 +32,24 @@ export class User extends BaseEntity {
   @Column({ default: '' })
   eid: string = '';
 
-  //A user can report many posts
-  @OneToMany(() => Ticket, (ticket) => ticket.user)
-  ticket: Ticket[];
+  @Column({ default: AccountType.Standalone })
+  accountType: AccountType = AccountType.Standalone;
 
-  //A user can report many posts
+  //A user can have many tickets
+  @OneToMany(() => Ticket, (ticket) => ticket.user)
+  tickets: Ticket[];
+
+  //A user can have many activities
   @OneToMany(() => Activity, (activity) => activity.user)
   activities: Activity[];
+
+  //A user can follow many users
+  @OneToMany(() => GuardianShip, (guardianship) => guardianship.parent)
+  children: GuardianShip[];
+
+  //A user can be followed by many users
+  @OneToMany(() => GuardianShip, (guardianship) => guardianship.child)
+  parents: GuardianShip[];
 
   @BeforeInsert()
   emailToLowerCase() {

@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { SignUpUserDto } from '../auth/dto/user-signup.dto';
+import { GuardianShip } from './entities/guardianship.entity';
+import { log } from 'console';
 
 @Injectable()
 export class UserService {
@@ -12,7 +14,10 @@ export class UserService {
    */
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+
+    @InjectRepository(GuardianShip)
+    private guardianshipRepository: Repository<GuardianShip>
   ) {}
 
   /**
@@ -29,6 +34,7 @@ export class UserService {
     newUser.password = user.password;
     newUser.phoneNumber = user.phoneNumber;
     newUser.eid = user.eid;
+    newUser.accountType = user.accountType;
 
     return this.usersRepository.save(newUser);
   }
@@ -44,5 +50,33 @@ export class UserService {
 
   getUserById(id: string): Promise<User> {
     return this.usersRepository.findOne({ where: { id: id } });
+  }
+
+  async addChild(user: User, email: string): Promise<GuardianShip> {
+    const child = await this.findOneByEmail(email);
+
+    if (!child) {
+      throw new BadRequestException('No user with this email');
+    }
+
+    const guardianship = new GuardianShip();
+    guardianship.parent = user;
+    guardianship.child = child;
+
+    return this.guardianshipRepository.save(guardianship);
+  }
+
+  async getChildren(user: User): Promise<User[]> {
+    const relationships = await this.usersRepository
+      .findOne({ where: { id: user.id }, relations: ['children.child'] })
+      .then((user) => {
+        return user.children;
+      });
+
+    const children = relationships.map((relationship) => {
+      return relationship.child;
+    });
+
+    return children;
   }
 }

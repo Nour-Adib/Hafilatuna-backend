@@ -27,7 +27,7 @@ export class Ticket extends BaseEntity {
   clusterNumber: number;
 
   //A Report can only be posted by one user but a user can have many Reports
-  @ManyToOne(() => User, (user) => user.ticket, {
+  @ManyToOne(() => User, (user) => user.tickets, {
     onDelete: 'CASCADE'
   })
   user: User;

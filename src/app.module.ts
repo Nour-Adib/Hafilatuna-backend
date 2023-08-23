@@ -7,6 +7,7 @@ import { User } from './modules/user/entities/user.entity';
 import { UserModule } from './modules/user/user.module';
 import { Ticket } from './modules/ticket/entities/ticket.entity';
 import { Activity } from './modules/ticket/entities/activity.entity';
+import { GuardianShip } from './modules/user/entities/guardianship.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { Activity } from './modules/ticket/entities/activity.entity';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [User, Ticket, Activity],
+        entities: [User, Ticket, Activity, GuardianShip],
         synchronize: true,
         autoLoadEntities: true,
         options: { encrypt: false },
