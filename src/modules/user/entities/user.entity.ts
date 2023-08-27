@@ -32,6 +32,9 @@ export class User extends BaseEntity {
   @Column({ default: '' })
   eid: string = '';
 
+  @Column({ default: 0 })
+  points: number = 0;
+
   @Column({ default: AccountType.Standalone })
   accountType: AccountType = AccountType.Standalone;
 

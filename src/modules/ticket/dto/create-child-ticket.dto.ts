@@ -15,5 +15,8 @@ export class CreateChildTicketDto {
   pickUpAddress: string;
 
   @IsNotEmpty()
+  seatNumber: number;
+
+  @IsNotEmpty()
   dropOffTime: string;
 }

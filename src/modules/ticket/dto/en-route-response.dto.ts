@@ -1,21 +1,19 @@
 import { IsNotEmpty } from 'class-validator';
+import { School } from '../entities/school.entity';
 
 /**
  * This is the DTO for creating a reports for both user and post
  */
-export class CreateTicketDto {
+export class EnRouteResponseDto {
   @IsNotEmpty()
-  dropOffAddress: string;
+  school: School;
 
   @IsNotEmpty()
-  lon: number;
+  pickUpLon: string;
 
   @IsNotEmpty()
-  lat: number;
+  pickUpLat: string;
 
   @IsNotEmpty()
-  seatNumber: number;
-
-  @IsNotEmpty()
-  dropOffTime: string;
+  isEnRoute: boolean;
 }

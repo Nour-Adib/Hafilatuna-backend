@@ -66,20 +66,6 @@ export class TicketController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:id')
-  getTicketById(@Request() req, @Res() res: Response, @Param('id') ticketId) {
-    this.ticketService
-      .getTicketById(req.user, ticketId)
-      .then((activities) => {
-        return res.status(HttpStatus.OK).json(activities);
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(err.status).json({ message: err.message });
-      });
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post('activity/pickup/:id')
   pickupActivity(@Request() req, @Res() res: Response, @Param('id') ticketId) {
     this.ticketService
@@ -98,6 +84,39 @@ export class TicketController {
   dropoffActivity(@Request() req, @Res() res: Response, @Param('id') ticketId) {
     this.ticketService
       .dropoffActivity(req.user, ticketId)
+      .then((activities) => {
+        return res.status(HttpStatus.OK).json(activities);
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(err.status).json({ message: err.message });
+      });
+  }
+
+  @Get('data-dump')
+  dataDump(@Res() res: Response) {
+    this.ticketService.dataDump();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('is-en-route/:id')
+  isEnRoute(@Request() req, @Res() res: Response, @Param('id') ticketId) {
+    this.ticketService
+      .isEnRoute(req.user, ticketId)
+      .then((data) => {
+        return res.status(HttpStatus.OK).json(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(err.status).json({ message: err.message });
+      });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  getTicketById(@Request() req, @Res() res: Response, @Param('id') ticketId) {
+    this.ticketService
+      .getTicketById(req.user, ticketId)
       .then((activities) => {
         return res.status(HttpStatus.OK).json(activities);
       })
