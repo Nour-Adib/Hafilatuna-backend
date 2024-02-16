@@ -23,7 +23,7 @@ export class TicketService {
     private activityRepository: Repository<Activity>,
     @InjectRepository(School)
     private schoolRepository: Repository<School>
-  ) {}
+  ) { }
 
   async createTicket(user: User, createTicketDto: CreateTicketDto): Promise<Ticket> {
     const expirationDate = new Date();
@@ -269,14 +269,17 @@ export class TicketService {
   }
 
   async dataDump() {
-    /* await schoolClusters.map(async (entry) => {
-      const school = await this.schoolRepository.findOne({
-        where: { schoolName: entry['School Name'] }
-      });
+    await schoolClusters.map(async (entry) => {
 
-      school.latitude = entry["Latitude"];
-      school.longitude = entry["Longitude"];
-      this.schoolRepository.save(school);
-    }); */
+      const newSchol = new School();
+      newSchol.schoolName = entry['School Name'];
+      newSchol.clusterNumber = entry['Cluster Number'];
+      newSchol.latitude = entry['Latitude'];
+      newSchol.longitude = entry['Longitude'];
+      newSchol.clusterNumber = entry['Cluster'];
+
+
+      this.schoolRepository.save(newSchol);
+    });
   }
 }
